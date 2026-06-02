@@ -232,4 +232,5 @@ __marimo__/
 
 
 
-data/
+data/.env-*/
+.venv-*/
