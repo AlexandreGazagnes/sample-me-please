@@ -5,7 +5,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 TEST_FILE="test-short.mp3"
-TEST_SRC="test/source/$TEST_FILE"
+TEST_SRC="tests/source/$TEST_FILE"
 
 GRN="\033[92m"; RED="\033[91m"; CYN="\033[96m"; BLD="\033[1m"; RST="\033[0m"
 ok()     { echo -e "  ${GRN}✓${RST} $1"; }
@@ -53,7 +53,7 @@ ok "Copied → data/requests/$TEST_FILE"
 
 # ── Run pipeline ──────────────────────────────────────────────────────────────
 header "Running pipeline"
-bash script.sh "$TEST_FILE"
+bash src/pipeline/script.sh "$TEST_FILE"
 
 # ── Move results into test/ ───────────────────────────────────────────────────
 header "Moving results"
@@ -61,7 +61,7 @@ JOB_DIR=$(ls -td data/processed/test-short_* 2>/dev/null | head -1 || true)
 [ -n "$JOB_DIR" ] || err "No output found in data/processed/"
 
 JOB_NAME=$(basename "$JOB_DIR")
-mv "$JOB_DIR" "test/$JOB_NAME"
-ok "Results → test/$JOB_NAME"
+mv "$JOB_DIR" "tests/$JOB_NAME"
+ok "Results → tests/$JOB_NAME"
 
-header "Done — test/$JOB_NAME"
+header "Done — tests/$JOB_NAME"

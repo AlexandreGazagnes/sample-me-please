@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sample-Me-Please</title>
+<style>
+  :root {
+    --bg: #0f0f13;
+    --surface: #1a1a22;
+    --border: #2a2a38;
+    --accent: #7c6af7;
+    --accent-dim: #3d3480;
+    --text: #e8e8f0;
+    --muted: #666680;
+    --ok: #4caf82;
+    --err: #e05c6a;
+    --warn: #f0a030;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 14px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  h1 { font-size: 1.1rem; letter-spacing: 0.3em; color: var(--accent); margin-bottom: 2rem; }
+
+  .screen { display: none; width: 100%; max-width: 720px; padding: 2rem; }
+  .screen.active { display: flex; flex-direction: column; align-items: center; }
+
+  /* ── Upload ── */
+  #drop-zone {
+    width: 100%;
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  #drop-zone.over { border-color: var(--accent); background: rgba(124,106,247,0.06); }
+  #drop-zone .icon { font-size: 2.5rem; margin-bottom: 1rem; }
+  #drop-zone p { color: var(--muted); margin-top: 0.5rem; font-size: 0.85rem; }
+  #drop-zone strong { color: var(--text); }
+  #file-input { display: none; }
+
+  .btn {
+    padding: 0.6rem 1.4rem;
+    border-radius: 6px;
+    border: 1px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn:hover { background: var(--accent-dim); }
+  .btn.primary { background: var(--accent); color: #fff; }
+  .btn.primary:hover { background: #9080ff; }
+
+  #upload-error { margin-top: 1rem; color: var(--err); font-size: 0.85rem; min-height: 1.2em; }
+
+  /* ── Processing ── */
+  #proc-file { color: var(--muted); font-size: 0.85rem; margin-bottom: 1.5rem; }
+
+  .steps {
+    display: flex;
+    gap: 0;
+    width: 100%;
+    margin-bottom: 1.2rem;
+  }
+  .step {
+    flex: 1;
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--muted);
+    position: relative;
+    padding-bottom: 0.5rem;
+  }
+  .step::after {
+    content: '';
+    display: block;
+    height: 2px;
+    background: var(--border);
+    margin-top: 0.4rem;
+    transition: background 0.4s;
+  }
+  .step.active { color: var(--accent); }
+  .step.active::after { background: var(--accent); }
+  .step.done { color: var(--ok); }
+  .step.done::after { background: var(--ok); }
+
+  .progress-bar {
+    width: 100%;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.6s ease;
+  }
+
+  #log-box {
+    width: 100%;
+    height: 300px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow: hidden;
+    font-size: 0.78rem;
+    line-height: 1.6;
+    color: var(--muted);
+    user-select: none;
+    pointer-events: none;
+  }
+  #log-box .line-ok { color: var(--ok); }
+  #log-box .line-err { color: var(--err); }
+  #log-box .line-step { color: var(--accent); }
+
+  /* ── Done ── */
+  #done-title { color: var(--ok); margin-bottom: 0.4rem; }
+  #done-sub { color: var(--muted); font-size: 0.82rem; margin-bottom: 1.5rem; }
+
+  #file-groups { width: 100%; }
+
+  .section-h2 {
+    font-size: 1rem;
+    color: var(--text);
+    letter-spacing: 0.08em;
+    margin: 1.6rem 0 0.6rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-h2:first-child { margin-top: 0; }
+
+  .section-h3 {
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin: 0.8rem 0 0.4rem;
+  }
+
+  .file-list { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.4rem; }
+  .file-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.5rem 0.8rem;
+  }
+  .file-name { flex: 1; font-size: 0.82rem; }
+  .file-size { color: var(--muted); font-size: 0.75rem; margin: 0 1rem; }
+  .file-dl {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.7rem;
+    border-radius: 4px;
+    border: 1px solid var(--accent-dim);
+    background: transparent;
+    color: var(--accent);
+    cursor: pointer;
+    text-decoration: none;
+    font-family: inherit;
+  }
+  .file-dl:hover { background: var(--accent-dim); }
+
+  #no-files { color: var(--muted); font-size: 0.85rem; }
+
+  .done-actions {
+    display: flex;
+    gap: 0.8rem;
+    margin-top: 2rem;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* ── Feedback form ── */
+  .feedback-section {
+    width: 100%;
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .feedback-title {
+    font-size: 0.9rem;
+    color: var(--text);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.3rem;
+  }
+  .feedback-sub {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 1.2rem;
+  }
+  .feedback-form { display: flex; flex-direction: column; gap: 0.7rem; }
+  .feedback-form input,
+  .feedback-form textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.6rem 0.8rem;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    outline: none;
+    resize: vertical;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+    color-scheme: dark;
+  }
+  .feedback-form input:focus,
+  .feedback-form textarea:focus { border-color: var(--accent); }
+  .feedback-form input::placeholder,
+  .feedback-form textarea::placeholder { color: var(--muted); }
+  .feedback-form textarea { min-height: 100px; }
+  .feedback-ok { color: var(--ok); font-size: 0.8rem; margin-top: 0.3rem; display: none; }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    body { justify-content: flex-start; padding-top: 1.5rem; }
+
+    h1 { font-size: 0.95rem; margin-bottom: 1.2rem; }
+
+    .screen { padding: 1rem; }
+
+    #drop-zone { padding: 1.5rem 1rem; }
+    #drop-zone .icon { font-size: 1.8rem; }
+
+    #log-box { height: 220px; font-size: 0.72rem; }
+
+    .file-row { flex-wrap: wrap; gap: 0.3rem; }
+    .file-name { width: 100%; font-size: 0.78rem; }
+    .file-size { margin: 0; font-size: 0.7rem; }
+
+    .done-actions { flex-direction: column; align-items: stretch; }
+    .done-actions .btn { text-align: center; }
+    .feedback-form button { align-self: stretch !important; text-align: center; }
+
+    .step { font-size: 0.65rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Upload -->
+<section id="screen-upload" class="screen active">
+  <h1>Sample-Me-Please</h1>
+  <p style="text-align:center;color:var(--muted);font-size:0.82rem;max-width:480px;line-height:1.9;margin-bottom:2rem;">
+    Sample-Me-Please is built to help Disco, Funky &amp; House producers in sampling. It extracts stems with deep focus on cleaning samples and stems, then converts everything to MIDI.<br><br>
+    <span style="color:var(--accent)">100% free · no registration · alpha version</span><br>
+    <span style="color:var(--muted)">developed by <strong style="color:var(--text)">ChantalGayo</strong>, French producer, Orga and DJ.</span>
+  </p>
+  <div id="drop-zone">
+    <div class="icon">♫</div>
+    <strong>Drop your audio file here</strong>
+    <p>or click to browse — MP3 · FLAC · WAV · AIFF</p>
+    <input type="file" id="file-input" accept=".mp3,.flac,.wav,.aiff">
+  </div>
+  <div id="upload-error"></div>
+  <button class="btn primary" id="browse-btn" style="margin-top:1.2rem">Browse file</button>
+  <div style="margin-top:1.4rem;padding:0.7rem 1.1rem;background:#3a1010;border:1px solid #7a2020;border-radius:6px;color:#f08080;font-size:0.78rem;line-height:1.7;text-align:center;max-width:480px;">
+    ⚠ Please upload only <strong>320 kbps MP3</strong>, <strong>FLAC</strong>, <strong>AIFF</strong> or <strong>WAV</strong> (16-bit depth minimum).<br>
+    No YouTube or SoundCloud rips — thank you.
+  </div>
+</section>
+
+<!-- Processing -->
+<section id="screen-processing" class="screen">
+  <h1>Sample-Me-Please</h1>
+  <div id="proc-file"></div>
+  <div class="steps">
+    <div class="step" id="step-1">Stems</div>
+    <div class="step" id="step-2">Clean</div>
+    <div class="step" id="step-3">MIDI</div>
+    <div class="step" id="step-4">Done</div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  <div id="log-box"></div>
+</section>
+
+<!-- Done -->
+<section id="screen-done" class="screen">
+  <h1>Sample-Me-Please</h1>
+  <div id="done-title">Pipeline complete</div>
+  <div id="done-sub"></div>
+  <div id="file-groups"></div>
+  <div id="no-files" style="display:none">No output files found.</div>
+  <div class="done-actions">
+    <a id="download-all-btn" class="btn primary" style="text-decoration:none">↓ Download all</a>
+    <button class="btn" id="restart-btn">Submit another file</button>
+  </div>
+
+  <div class="feedback-section">
+    <div class="feedback-title">Questions, suggestions & feedback</div>
+    <div class="feedback-sub">Bugs, ideas, feature requests — anything goes. Drop a message below.</div>
+    <form class="feedback-form" id="feedback-form">
+      <textarea id="fb-msg" placeholder="Your message..." required></textarea>
+      <input type="text" id="fb-ig" placeholder="Leave your email, IG handle or a nickname so we can reach back to you">
+      <button type="submit" class="btn primary" style="align-self:flex-start">Send</button>
+      <div class="feedback-ok" id="feedback-ok">✓ Message sent — thank you!</div>
+    </form>
+  </div>
+</section>
+
+<script>
+  const $ = id => document.getElementById(id);
+
+  function show(id) {
+    ['screen-upload','screen-processing','screen-done'].forEach(s => {
+      document.getElementById(s).classList.toggle('active', s === id);
+    });
+  }
+
+  // ── Drag & drop ──────────────────────────────────────────────────────────────
+  const zone = $('drop-zone');
+  const fileInput = $('file-input');
+
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('over');
+    const f = e.dataTransfer.files[0];
+    if (f) startUpload(f);
+  });
+  zone.addEventListener('click', () => fileInput.click());
+  $('browse-btn').addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', () => { if (fileInput.files[0]) startUpload(fileInput.files[0]); });
+
+  // ── Upload ───────────────────────────────────────────────────────────────────
+  async function startUpload(file) {
+    $('upload-error').textContent = '';
+    const form = new FormData();
+    form.append('file', file);
+
+    let res, data;
+    try {
+      res = await fetch('/api/upload', { method: 'POST', body: form });
+      data = await res.json();
+    } catch (e) {
+      $('upload-error').textContent = 'Upload failed: ' + e.message;
+      return;
+    }
+    if (!res.ok) {
+      $('upload-error').textContent = data.detail || 'Upload error';
+      return;
+    }
+
+    $('proc-file').textContent = file.name;
+    resetProcessing();
+    show('screen-processing');
+    streamJob(data.job_id);
+  }
+
+  // ── Progress ─────────────────────────────────────────────────────────────────
+  let currentJobId = null;
+
+  function resetProcessing() {
+    $('log-box').innerHTML = '';
+    setProgress(0);
+    [1,2,3,4].forEach(i => {
+      const s = $('step-'+i);
+      s.className = 'step';
+    });
+  }
+
+  function setProgress(pct, stepIdx) {
+    $('progress-fill').style.width = pct + '%';
+    if (stepIdx) {
+      for (let i = 1; i <= 4; i++) {
+        const s = $('step-'+i);
+        if (i < stepIdx) s.className = 'step done';
+        else if (i === stepIdx) s.className = 'step active';
+        else s.className = 'step';
+      }
+    }
+  }
+
+  function appendLog(text) {
+    const box = $('log-box');
+    const div = document.createElement('div');
+    const lower = text.toLowerCase();
+    if (lower.includes('step ') || lower.includes('done')) div.className = 'line-step';
+    else if (lower.includes('error') || lower.includes('failed')) div.className = 'line-err';
+    else if (lower.includes('✓') || lower.includes('ok')) div.className = 'line-ok';
+    div.textContent = text;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function parseStep(text) {
+    // script.sh steps: 0-2 setup, 3 stems, 4 clean, 5 midi, 6-8 sort+assemble, Done
+    if (text.includes('Step 0') || text.includes('Step 1') || text.includes('Step 2')) return [1, 5];
+    if (text.includes('Step 3')) return [1, 10];
+    if (text.includes('Step 4')) return [2, 60];
+    if (text.includes('Step 5')) return [3, 78];
+    if (text.includes('Step 6') || text.includes('Step 7') || text.includes('Step 8')) return [3, 90];
+    if (text.includes('Done.')) return [4, 100];
+    return null;
+  }
+
+  function streamJob(jobId) {
+    currentJobId = jobId;
+    const es = new EventSource(`/api/jobs/${jobId}/stream`);
+
+    es.onmessage = e => {
+      const msg = JSON.parse(e.data);
+      if (msg.type === 'ping') return;
+      if (msg.type === 'log') {
+        appendLog(msg.text);
+        const step = parseStep(msg.text);
+        if (step) setProgress(step[1], step[0]);
+      }
+      if (msg.type === 'done') {
+        es.close();
+        setProgress(100, 4);
+        appendLog('✓ Pipeline complete');
+        setTimeout(() => loadDone(jobId), 800);
+      }
+      if (msg.type === 'error') {
+        es.close();
+        appendLog('✗ ' + (msg.text || 'Error'));
+      }
+    };
+
+    es.onerror = () => es.close();
+  }
+
+  // ── Done screen ──────────────────────────────────────────────────────────────
+  async function loadDone(jobId) {
+    let data;
+    try {
+      const res = await fetch(`/api/jobs/${jobId}/files`);
+      data = await res.json();
+    } catch { data = { files: [] }; }
+
+    const container = $('file-groups');
+    container.innerHTML = '';
+    const dlAll = $('download-all-btn');
+    dlAll.href = `/api/jobs/${jobId}/download-all`;
+
+    if (data.files.length === 0) {
+      $('no-files').style.display = '';
+      show('screen-done');
+      return;
+    }
+
+    $('no-files').style.display = 'none';
+    $('done-sub').textContent = `${data.files.length} file${data.files.length > 1 ? 's' : ''} ready`;
+
+    // bucket files by group path
+    const bucket = {};
+    for (const f of data.files) {
+      const g = f.group || 'source';
+      if (!bucket[g]) bucket[g] = [];
+      bucket[g].push(f);
+    }
+
+    function fileList(files) {
+      const list = document.createElement('div');
+      list.className = 'file-list';
+      for (const f of files) {
+        const row = document.createElement('div');
+        row.className = 'file-row';
+        row.innerHTML = `
+          <span class="file-name">${f.name}</span>
+          <span class="file-size">${fmtSize(f.size)}</span>
+          <a class="file-dl" href="/dl/${f.path}" download="${f.name}">↓</a>
+        `;
+        list.appendChild(row);
+      }
+      return list;
+    }
+
+    function h2(text) {
+      const el = document.createElement('div');
+      el.className = 'section-h2';
+      el.textContent = text;
+      return el;
+    }
+
+    function h3(text) {
+      const el = document.createElement('div');
+      el.className = 'section-h3';
+      el.textContent = text;
+      return el;
+    }
+
+    // Stems
+    if (bucket['stems/best_quality'] || bucket['stems/regular_quality']) {
+      container.appendChild(h2('Stems'));
+      if (bucket['stems/best_quality']) {
+        container.appendChild(h3('Best quality'));
+        container.appendChild(fileList(bucket['stems/best_quality']));
+      }
+      if (bucket['stems/regular_quality']) {
+        container.appendChild(h3('Regular quality'));
+        container.appendChild(fileList(bucket['stems/regular_quality']));
+      }
+    }
+
+    // MIDI
+    if (bucket['midi/best_quality'] || bucket['midi/regular_quality']) {
+      container.appendChild(h2('MIDI'));
+      if (bucket['midi/best_quality']) {
+        container.appendChild(h3('Best quality'));
+        container.appendChild(fileList(bucket['midi/best_quality']));
+      }
+      if (bucket['midi/regular_quality']) {
+        container.appendChild(h3('Regular quality'));
+        container.appendChild(fileList(bucket['midi/regular_quality']));
+      }
+    }
+
+    // Original track
+    if (bucket['source']) {
+      container.appendChild(h2('Original track'));
+      container.appendChild(fileList(bucket['source']));
+    }
+
+    show('screen-done');
+  }
+
+  function fmtSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  $('restart-btn').addEventListener('click', () => {
+    fileInput.value = '';
+    $('upload-error').textContent = '';
+    show('screen-upload');
+  });
+
+  $('feedback-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const msg = $('fb-msg').value.trim();
+    const ig  = $('fb-ig').value.trim();
+    if (!msg) return;
+    try {
+      await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ig, message: msg }),
+      });
+      $('fb-msg').value = '';
+      $('fb-ig').value = '';
+      const ok = $('feedback-ok');
+      ok.style.display = '';
+      setTimeout(() => { ok.style.display = 'none'; }, 4000);
+    } catch {}
+  });
+</script>
+</body>
+</html>

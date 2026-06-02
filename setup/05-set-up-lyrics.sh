@@ -1,5 +1,5 @@
 #!/bin/bash
-# STEMIDI — Setup all environments
+# Sample-Me-Please — Setup all environments
 # Versions exactes testées et validées
 # Usage: bash setup.sh
 

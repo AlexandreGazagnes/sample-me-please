@@ -1,5 +1,5 @@
 #!/bin/bash
-# STEMIDI — Setup all environments
+# Sample-Me-Please — Setup all environments
 # Versions exactes testées et validées
 # Usage: bash setup.sh
 
@@ -92,8 +92,8 @@ fi
 # TEST  clea stem to  clean 
 
 BASENAME="test"
-STEMS_DIR="test/out/stems"
-CLEAN1_DIR="test/out/cleaned_1"
+STEMS_DIR="tests/out/stems"
+CLEAN1_DIR="tests/out/cleaned_1"
 STEMMED_FILE="$STEMS_DIR/${BASENAME}_vocals.wav"
  
 source .env-clean-1/bin/activate

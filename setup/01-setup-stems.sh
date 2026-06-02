@@ -1,5 +1,5 @@
 #!/bin/bash
-# STEMIDI — Setup all environments
+# Sample-Me-Please — Setup all environments
 # Versions exactes testées et validées
 # Usage: bash setup.sh
 
@@ -46,8 +46,8 @@ fi
 deactivate
 source .env-stems/bin/activate
 
-INPUT_DIR="test/source"
-OUTPUT_DIR="test/out/stems"
+INPUT_DIR="tests/source"
+OUTPUT_DIR="tests/out/stems"
 FILE_NAME="test.flac"
 
 BASENAME=$(basename "$FILE_NAME")

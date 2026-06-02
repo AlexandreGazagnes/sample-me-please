@@ -1,5 +1,5 @@
 #!/bin/bash
-# STEMIDI — Web app environment setup (FastAPI)
+# Sample-Me-Please — Web app environment setup (FastAPI)
 # Usage: bash setup/06-setup-web-app.sh
 
 set -e
