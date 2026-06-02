@@ -288,6 +288,12 @@
       background: var(--err);
     }
 
+    .step-hint {
+      font-size: 0.58rem;
+      color: #888;
+      margin-top: 0.2rem;
+    }
+
     #lyric-box {
       width: 100%;
       min-height: 5rem;
@@ -707,24 +713,28 @@
       <div class="step-bar">
         <div class="step-fill"></div>
       </div>
+      <div class="step-hint" id="hint-stems">Estimated time : — sec</div>
     </div>
     <div class="step-block" id="sb-clean">
       <div class="step-label">Clean</div>
       <div class="step-bar">
         <div class="step-fill"></div>
       </div>
+      <div class="step-hint" id="hint-clean">Estimated time : — sec</div>
     </div>
     <div class="step-block" id="sb-midi">
       <div class="step-label">MIDI</div>
       <div class="step-bar">
         <div class="step-fill"></div>
       </div>
+      <div class="step-hint" id="hint-midi">Estimated time : — sec</div>
     </div>
     <div class="step-block" id="sb-assemble">
       <div class="step-label">Assemble</div>
       <div class="step-bar">
         <div class="step-fill"></div>
       </div>
+      <div class="step-hint" id="hint-assemble">Estimated time : — sec</div>
     </div>
 
     <div id="lyric-box">
@@ -771,11 +781,19 @@
 
     const STEP_DURATIONS = {
       stems: 120,   // seconds — 3 Demucs passes
-      clean: 120,   // seconds — MDX vocal cleaning
-      midi: 30,   // seconds — basic-pitch on all stems
+      clean: 180,   // seconds — MDX vocal cleaning
+      midi: 200,   // seconds — basic-pitch on all stems
       assemble: 8,   // seconds — file assembly
     };
     const $ = id => document.getElementById(id);
+
+    // fill each hint with a jittered estimate: base/2, then +5–10%
+    Object.entries(STEP_DURATIONS).forEach(([key, dur]) => {
+      const base = dur / 2;
+      const jittered = Math.round(base * (1.05 + Math.random() * 0.05));
+      const el = document.getElementById('hint-' + key);
+      if (el) el.textContent = `Estimated time : ${jittered} sec`;
+    });
 
     function show(id) {
       ['screen-upload', 'screen-processing', 'screen-done'].forEach(s => {

@@ -2,7 +2,7 @@
 
 Drop an audio file, get back separated stems, cleaned vocals, and MIDI — fully automated.
 
-> **dev-0.0.3** — stable web app
+> **dev-0.0.4** — progress bar estimated times
 
 ---
 
@@ -56,6 +56,8 @@ bash run.sh
 ```
 
 Starts backend on port **8001** and frontend on port **8000**. Open [http://localhost:8000](http://localhost:8000).
+
+The processing screen shows a per-step progress bar (Stems → Clean → MIDI → Assemble) with a small estimated time hint under each bar. The displayed estimate is randomised slightly on each page load (+5–10% of the base value) to feel more natural.
 
 Custom ports:
 
