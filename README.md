@@ -2,6 +2,8 @@
 
 Drop an audio file, get back separated stems, cleaned vocals, and MIDI — fully automated.
 
+> **dev-0.0.3** — stable web app
+
 ---
 
 ## What it does
@@ -53,24 +55,24 @@ bash setup/08-setup-front.sh     # FastAPI frontend
 bash run.sh
 ```
 
-Opens backend on port **8001** and frontend on port **8000**. Visit [http://localhost:8000](http://localhost:8000).
+Starts backend on port **8001** and frontend on port **8000**. Open [http://localhost:8000](http://localhost:8000).
 
-Environment overrides:
+Custom ports:
 
 ```bash
-BACK_PORT=8001 FRONT_PORT=8000 BACK_URL=http://localhost:8001 bash run.sh
+BACK_PORT=8001 FRONT_PORT=8000 bash run.sh
 ```
 
 ### Command line
 
 ```bash
-# Pass a file path directly
+# Full path
 ./src/pipeline/script.sh data/test/mysong.mp3
 
-# Or drop the file in data/requests/ and pass just the filename
+# Bare filename (file must be in data/requests/)
 ./src/pipeline/script.sh mysong.mp3
 
-# Interactive mode
+# Interactive
 ./src/pipeline/script.sh
 ```
 
@@ -89,7 +91,7 @@ data/processed/{song}_{token}/
 ├── stems/
 │   ├── best_quality/
 │   │   ├── {song}_vocals.wav
-│   │   ├── {song}_vocals_clean_2.wav
+│   │   ├── {song}_vocals_clean_2.wav   ← cleaned vocals
 │   │   ├── {song}_bass.wav
 │   │   ├── {song}_drums.wav
 │   │   ├── {song}_no_vocals.wav
@@ -113,19 +115,16 @@ data/processed/{song}_{token}/
 
 ```
 sample-me-please/
-├── run.sh                     # start everything (backend + frontend)
+├── run.sh                     # start everything — one command
 ├── src/
 │   ├── pipeline/
-│   │   └── script.sh          # main pipeline — run this directly or via web
+│   │   └── script.sh          # main pipeline (CLI or called by backend)
 │   ├── back/
-│   │   ├── back.py            # FastAPI backend (split mode)
-│   │   └── app.py             # FastAPI monolith (single-server mode)
+│   │   └── back.py            # FastAPI backend + SSE job streaming
 │   └── front/
 │       ├── front.py           # FastAPI frontend
-│       ├── static/
-│       │   └── index.html     # single-page web app
-│       └── templates/
-│           └── index.html     # template for monolith mode
+│       └── static/
+│           └── index.html     # single-page web app
 ├── setup/                     # one-time environment setup scripts
 ├── data/
 │   ├── requests/              # drop audio files here (CLI mode)
@@ -153,8 +152,9 @@ sample-me-please/
 
 ## Known limitations
 
-- Vocal cleaning runs on CPU only (GPU path not yet working)
-- Lyrics transcription exists but is not wired into the pipeline
+- Vocal cleaning runs on CPU only — GPU path not yet working
+- Lyrics transcription is set up but not wired into the pipeline
+- Job state is in-memory — lost on server restart
 - No BPM, key, or chord detection yet
 
 ---
