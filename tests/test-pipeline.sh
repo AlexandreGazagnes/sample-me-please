@@ -53,7 +53,7 @@ ok "Copied → data/requests/$TEST_FILE"
 
 # ── Run pipeline ──────────────────────────────────────────────────────────────
 header "Running pipeline"
-bash script.sh "$TEST_FILE"
+bash src/pipeline/script.sh "$TEST_FILE"
 
 # ── Move results into test/ ───────────────────────────────────────────────────
 header "Moving results"
