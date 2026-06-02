@@ -23,15 +23,15 @@ cd "$SCRIPT_DIR"
 header "Project structure"
 
 mkdir -p \
-    "$SCRIPT_DIR/test/source" \
-    "$SCRIPT_DIR/test/out/stems" \
-    "$SCRIPT_DIR/test/out/cleaned" \
-    "$SCRIPT_DIR/test/out/cleaned_1" \
-    "$SCRIPT_DIR/test/out/cleaned_2" \
-    "$SCRIPT_DIR/test/out/lyrics" \
-    "$SCRIPT_DIR/test/out/bpm-key" \
-    "$SCRIPT_DIR/test/out/chords" \
-    "$SCRIPT_DIR/test/out/midi"
+    "$SCRIPT_DIR/tests/source" \
+    "$SCRIPT_DIR/tests/out/stems" \
+    "$SCRIPT_DIR/tests/out/cleaned" \
+    "$SCRIPT_DIR/tests/out/cleaned_1" \
+    "$SCRIPT_DIR/tests/out/cleaned_2" \
+    "$SCRIPT_DIR/tests/out/lyrics" \
+    "$SCRIPT_DIR/tests/out/bpm-key" \
+    "$SCRIPT_DIR/tests/out/chords" \
+    "$SCRIPT_DIR/tests/out/midi"
 
 ok "Folders ready:"
 echo -e "
@@ -41,7 +41,7 @@ echo -e "
   ├── .env-stems/
   ├── .env-clean/
   ├── .env-midi/
-  └── test/
+  └── tests/
       ├── source/    ← placez votre fichier audio ici
       └── out/
           ├── stems/

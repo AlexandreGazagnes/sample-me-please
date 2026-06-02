@@ -59,7 +59,7 @@ fi
 
 source .env-midi/bin/activate
 
-SOURCE_FOLDER="test/out/stems"
+SOURCE_FOLDER="tests/out/stems"
 DEST_FOLDER="/home/alex/Desktop/stemidi/files/out/midi"
 
 # mkdir -p "$DEST_FOLDER"

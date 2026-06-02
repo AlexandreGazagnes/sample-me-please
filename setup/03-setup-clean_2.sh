@@ -52,9 +52,9 @@ fi
 
 
 BASENAME="test"
-STEMS_DIR="test/out/stems"
-CLEAN1_DIR="test/out/cleaned_1"
-CLEAN2_DIR="test/out/cleaned_2"
+STEMS_DIR="tests/out/stems"
+CLEAN1_DIR="tests/out/cleaned_1"
+CLEAN2_DIR="tests/out/cleaned_2"
 STEMMED_FILE="$STEMS_DIR/${BASENAME}_vocals.wav"
 CLEAN1_FILE="$CLEAN1_DIR/${BASENAME}_cleaned_1.wav"
 
