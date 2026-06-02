@@ -21,7 +21,7 @@ FRONT_ORIGIN = os.getenv("FRONT_ORIGIN", "http://localhost:8000")
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[FRONT_ORIGIN],
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )

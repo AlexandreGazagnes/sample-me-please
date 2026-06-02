@@ -1,5 +1,5 @@
 #!/bin/bash
-# STEMIDI — Backend environment setup
+# Sample-Me-Please — Backend environment setup
 # Creates .env-back with FastAPI + uvicorn + multipart support
 # Usage: bash setup/07-setup-back.sh  (run from project root)
 

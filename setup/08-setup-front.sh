@@ -1,5 +1,5 @@
 #!/bin/bash
-# STEMIDI — Frontend environment setup
+# Sample-Me-Please — Frontend environment setup
 # Creates .env-front with FastAPI + uvicorn (serves static SPA only)
 # Usage: bash setup/08-setup-front.sh  (run from project root)
 

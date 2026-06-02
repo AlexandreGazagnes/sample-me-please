@@ -1,5 +1,5 @@
 #!/bin/bash
-# STEMIDI — Setup all environments
+# Sample-Me-Please — Setup all environments
 # Versions exactes testées et validées
 # Usage: bash setup.sh
 
@@ -60,7 +60,7 @@ fi
 source .env-midi/bin/activate
 
 SOURCE_FOLDER="tests/out/stems"
-DEST_FOLDER="/home/alex/Desktop/stemidi/files/out/midi"
+DEST_FOLDER="tests/out/midi"
 
 # mkdir -p "$DEST_FOLDER"
 

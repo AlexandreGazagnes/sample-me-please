@@ -1,5 +1,5 @@
 #!/bin/bash
-# STEMIDI — Setup all environments
+# Sample-Me-Please — Setup all environments
 # Versions exactes testées et validées
 # Usage: bash setup.sh
 
@@ -35,9 +35,9 @@ mkdir -p \
 
 ok "Folders ready:"
 echo -e "
-  stemidi/
+  sample-me-please/
   ├── setup.sh
-  ├── stemmidi.py
+  ├── app.py
   ├── .env-stems/
   ├── .env-clean/
   ├── .env-midi/
