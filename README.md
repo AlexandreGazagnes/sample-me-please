@@ -1,1 +1,13 @@
-# sample-me-please
+PB : 
+
+
+
+- 1 FAIRE PLUSIEURS SEP A FOIS, PAS JUSTE VOCALS
+- LE CLEANER EN 2 fois ne passe pas 
+- PAS EN GPU
+
+
+- RAJOUTER BPM
+- RAJOUTER KEY
+- RAJOIUTER LES PAROLE (detection) 
+- RAJOUTER LES ACCORDS
